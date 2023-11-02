@@ -266,9 +266,19 @@ class BarkProcessor(ProcessorMixin):
                 voice_preset = np.load(voice_preset)
 
         if voice_preset is not None:
-            self._validate_voice_preset_dict(voice_preset, **kwargs)
+            ### CHANGE:
+            # self._validate_voice_preset_dict(voice_preset, **kwargs)
+            self._validate_voice_preset_dict(voice_preset) 
+            ###
             voice_preset = BatchFeature(data=voice_preset, tensor_type=return_tensors)
 
+
+        ### CHANGE:
+        # messing up in TextToAudioPipeline.preprocess because it's setting padding manually there too
+        if "padding" in kwargs:
+            kwargs.pop("padding")
+        ### 
+        
         encoded_text = self.tokenizer(
             text,
             return_tensors=return_tensors,
